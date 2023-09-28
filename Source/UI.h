@@ -428,7 +428,7 @@ namespace orbit
 
 #define FPS 30.f
             UI(Utils& u) :
-                layout(
+                menuLayout(
                     { 20, 70, 20 },
                     { 5, 30, 2, 20, 20, 20, 20, 30, 30, 30, 30, 2, 5 }
                 ),
@@ -457,7 +457,7 @@ namespace orbit
             }
 #undef FPS
 		protected:
-            ui::Layout layout;
+            ui::Layout menuLayout;
             ASR asrEnv;
             Label title;
 
@@ -466,10 +466,10 @@ namespace orbit
             void resized() override
             {
                 const auto margin = 2.f;
-                layout.setBounds(getLocalBounds().toFloat());
-                layout.place(title, 1, 1, 1, 1, 0.f, false);
+                menuLayout.setBounds(getLocalBounds().toFloat());
+                menuLayout.place(title, 1, 1, 1, 1, 0.f, false);
                 for (auto p = 0; p < NumParams; ++p)
-                    layout.place(params[p], 0, 3 + p, 3, 1, margin, false);
+                    menuLayout.place(params[p], 0, 3 + p, 3, 1, margin, false);
             }
             void paint(juce::Graphics& g) override
             {
