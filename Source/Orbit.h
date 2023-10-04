@@ -20,6 +20,7 @@ namespace orbit
 		juce::Identifier mass{ "mass" };
 	};
 
+	/********** struct Smooth **********/
 	template<typename Float>
 	struct Smooth
 	{
@@ -88,7 +89,7 @@ namespace orbit
 		{
 			return processSample(sample);
 		}
-	protected:
+	private:
 		Float a0, b1, y1, eps, startVal;
 		const bool snap;
 
@@ -109,6 +110,7 @@ namespace orbit
 		buf.resize(blockSize, static_cast<Float>(0));
 	}
 
+	/********** struct Vec **********/
 	template<typename Float>
 	struct Vec
 	{
@@ -245,6 +247,7 @@ namespace orbit
 		return a.x != b.x || a.y != b.y;
 	}
 
+	/********** struct Move **********/
 	template<typename Float, size_t NumEdges>
 	struct Move
 	{
@@ -271,10 +274,11 @@ namespace orbit
 			vec.x += cosBuf[idx] * mag;
 			vec.y += sinBuf[idx] * mag;
 		}
-	protected:
+	private:
 		std::array<Float, NumEdges + 1> sinBuf, cosBuf;
 	};
 
+	/********** struct Shared **********/
 	template<typename Float>
 	struct Shared
 	{
@@ -286,24 +290,22 @@ namespace orbit
 		static Shared<Float> shared;
 	};
 
-	template<typename Type>
+	/********** struct Downsample **********/
+	template<typename Number>
 	struct Downsample
 	{
 		Downsample(const int _order) :
-			Fs(static_cast<Type>(48000)),
-			blockSize(64),
-			idx(-1),
 			order(1 << _order)
 		{
 
 		}
-		void prepare(Type sampleRate, int _blockSize) noexcept
+		void prepare(Number sampleRate, int _blockSize) noexcept
 		{
-			const auto oInv = static_cast<Type>(1) / static_cast<Type>(order);
+			const auto oInv = static_cast<Number>(1) / static_cast<Number>(order);
 			Fs = sampleRate * oInv;
-			blockSize = _blockSize / order;
+			blockSize = _blockSize * oInv;
 		}
-		bool process() noexcept
+		bool shouldProcess() noexcept
 		{
 			++idx;
 			if (idx == order)
@@ -313,11 +315,11 @@ namespace orbit
 			}
 			return false;
 		}
+		Number Fs{ static_cast<Number>(48000) };
 
-		Type Fs;
-		int blockSize;
-	protected:
-		int idx;
+	private:
+		int blockSize{ 64 };
+		int idx{ 0 }; // or -1?
 		const int order;
 	};
 
@@ -327,6 +329,7 @@ namespace orbit
 		return static_cast<juce::String>(vec.x) << "; " << static_cast<juce::String>(vec.y);
 	}
 
+	/********** struct Planet **********/
 	template<typename Float>
 	struct Planet
 	{
@@ -403,7 +406,7 @@ namespace orbit
 
 		Vec<Float> pos, dir;
 		Float mass, radius, angle, mag;
-	protected:
+	private:
 		// experimental functions:
 		void collideSlowDown(Float coeff) noexcept
 		{
@@ -421,6 +424,7 @@ namespace orbit
 		}
 	};
 
+	/********** struct CelestialBuffer **********/
 	template<typename Float>
 	struct CelestialBuffer
 	{
@@ -455,11 +459,12 @@ namespace orbit
 		}
 		const Float* getPhaseBuf() const noexcept { return phaseBuf.data(); }
 		const Float* getMagBuf() const noexcept { return magBuf.data(); }
-	protected:
+	private:
 		Smth phaseSmooth, magSmooth;
 		Buf phaseBuf, magBuf;
 	};
 
+	/********** struct UniversalBuffer **********/
 	template<typename Float, size_t NumPlanets>
 	struct UniversalBuffer
 	{
@@ -493,12 +498,13 @@ namespace orbit
 			}
 		}
 		const Celest& operator[](int p) const noexcept { return buffer[p]; }
-	protected:
+	private:
 		Buffer buffer;
 		Smooth<Float> depthSmooth;
 		ParamBuf depthBuf;
 	};
 
+	/********** struct Processor **********/
 	template<typename Float, size_t NumPlanets>
 	struct Processor
 	{
@@ -583,7 +589,7 @@ namespace orbit
 
 			for (auto s = 0; s < numSamples; ++s)
 			{
-				if (downsample.process())
+				if (downsample.shouldProcess())
 					processSample(_numPlanets, gravity, spaceMud, attraction);
 				for (auto i = 0; i < _numPlanets; ++i)
 					uniBuf.update(planets[i], i, s);
@@ -595,7 +601,7 @@ namespace orbit
 			return planets;
 		}
 		int getNumPlanets() const noexcept { return numPlanets.load(); }
-	protected:
+	private:
 		Planets planets;
 		double sampleRate, sampleRateInv;
 		Downsample<Float> downsample;
@@ -644,6 +650,7 @@ namespace orbit
 					planet.dir.y *= Repell;
 			}
 		}
+		/*
 		void topologyTorus()
 		{
 			
@@ -658,7 +665,7 @@ namespace orbit
 				while (planet.pos.y > MaxPos)
 					planet.pos.y -= RangePos;
 			}
-		}
+		} */
 
 		void bigBang(int _numPlanets) noexcept
 		{
@@ -685,6 +692,7 @@ namespace orbit
 		}
 	};
 
+	/********** struct WriteHead **********/
 	struct WriteHead
 	{
 		using Buffer = std::vector<int>;
@@ -708,7 +716,7 @@ namespace orbit
 			}
 		}
 		Buffer buffer;
-	protected:
+	private:
 		int wHead;
 	};
 
@@ -738,6 +746,7 @@ namespace orbit
 		return ((c3 * t + c2) * t + c1) * t + c0;
 	}
 
+	/********** struct Delay **********/
 	template<typename Float>
 	struct Delay
 	{
@@ -787,12 +796,13 @@ namespace orbit
 		}
 		int getRingBufferSize() const noexcept { return ringBufferSize; }
 		Float getRingBufferSizeF() const noexcept { return ringBufferSizeF; }
-	protected:
+	private:
 		RingBuffer ringBuffer;
 		Float ringBufferSizeF;
 		int ringBufferSize;
 	};
 
+	/********** struct Delays **********/
 	template<typename Float, size_t NumPlanets>
 	struct Delays
 	{
@@ -828,7 +838,7 @@ namespace orbit
 			}
 		}
 		Float getRingBufferSizeF() const noexcept { return delays[0].getRingBufferSizeF(); }
-	protected:
+	private:
 		WriteHead wHead;
 		DelayBuf delays;
 	};
