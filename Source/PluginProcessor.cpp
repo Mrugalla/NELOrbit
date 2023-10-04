@@ -174,8 +174,8 @@ void NELOrbitAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
 
     const auto numChannelsIn = getChannelCountOfBus(true, 0);
     const auto numChannels = buffer.getNumChannels();
-    const auto samplesDry = buffer.getArrayOfReadPointers();
-    auto samples = buffer.getArrayOfWritePointers();
+    const auto samplesDry = const_cast<float const**>(buffer.getArrayOfReadPointers());
+    auto samples = const_cast<float **>(buffer.getArrayOfWritePointers());
 
     dryWet.saveDry(
         samplesDry,
