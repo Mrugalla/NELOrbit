@@ -4,6 +4,7 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="20"
               displaySplashScreen="1">
   <MAINGROUP id="SA97iH" name="NELOrbit">
+    <FILE id="VBlRsB" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
     <FILE id="H0Crew" name="UI.cpp" compile="1" resource="0" file="Source/UI.cpp"/>
     <FILE id="t4wnvX" name="GUIBasics.cpp" compile="1" resource="0" file="Source/GUIBasics.cpp"/>
     <FILE id="C7vhpW" name="Param.cpp" compile="1" resource="0" file="Source/Param.cpp"/>
@@ -23,7 +24,6 @@
     </GROUP>
     <FILE id="HZ7fYN" name="MidSideEncoder.h" compile="0" resource="0"
           file="Source/MidSideEncoder.h"/>
-    <FILE id="XtTCeQ" name="OrbitEditor.cpp" compile="1" resource="0" file="Source/OrbitEditor.cpp"/>
     <FILE id="ZPtjWp" name="DryWetProcessor.h" compile="0" resource="0"
           file="Source/DryWetProcessor.h"/>
     <FILE id="f5O7Na" name="Param.h" compile="0" resource="0" file="Source/Param.h"/>

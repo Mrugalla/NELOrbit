@@ -73,14 +73,14 @@ namespace orbit
 		private:
 			Orbit& orbit;
 			const Planets& planets;
-			Vec<Float> bounds{}, centre{};
+			Vec2D<Float> bounds{}, centre{};
 			Float minDimen;
 			std::array<juce::Colour, NumPlanets> planetCols{};
 
 			/*
 			* The relative position of a planet is between -1 and 1, where 0 is the centre of the coord. system.
 			*/
-			Vec<Float> mapPlanetPosToBounds(const Vec<Float>& vec) const noexcept
+			Vec2D<Float> mapPlanetPosToBounds(const Vec2D<Float>& vec) const noexcept
 			{
 				return
 				{
@@ -89,7 +89,7 @@ namespace orbit
 				};
 			}
 
-			bool inBounds(const Vec<Float>& vec, const Float& edge) const noexcept
+			bool inBounds(const Vec2D<Float>& vec, const Float& edge) const noexcept
 			{
 				return
 					vec.x > -edge &&
