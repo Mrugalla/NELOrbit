@@ -5,6 +5,7 @@
 #include <juce_core/juce_core.h>
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_data_structures/juce_data_structures.h>
+#include "Constants.h"
 
 namespace orbit
 {
@@ -24,13 +25,11 @@ namespace orbit
 	template<typename Float>
 	struct Smooth
 	{
-		static constexpr Float Pi = static_cast<Float>(3.14159265359);
-		static constexpr Float Tau = Pi * static_cast<Float>(2);
+		using numConst = constants::NumericConstants<Float>;
 
 		void makeFromDecayInSamples(Float d) noexcept
 		{
-			static constexpr auto e = static_cast<Float>(2.71828182846);
-			const auto x = std::pow(e, static_cast<Float>(-1) / d);
+			const auto x = std::pow(numConst::E, static_cast<Float>(-1) / d);
 			setX(x);
 		}
 		void makeFromDecayInSecs(Float d, Float Fs) noexcept
@@ -39,8 +38,7 @@ namespace orbit
 		}
 		void makeFromDecayInFc(Float fc) noexcept
 		{
-			static constexpr auto e = static_cast<Float>(2.71828182846);
-			const auto x = std::pow(e, -Tau * fc);
+			const auto x = std::pow(numConst::E, -numConst::Tau * fc);
 			setX(x);
 		}
 		void makeFromDecayInHz(Float d, Float Fs) noexcept
@@ -112,72 +110,72 @@ namespace orbit
 
 	/********** struct Vec **********/
 	template<typename Float>
-	struct Vec
+	struct Vec2D
 	{
-		Vec(Float _x = static_cast<Float>(0), Float _y = static_cast<Float>(0)) :
+		Vec2D(Float _x = static_cast<Float>(0), Float _y = static_cast<Float>(0)) :
 			x(_x),
 			y(_y)
 		{}
 
-		bool operator==(const Vec<Float>& other) const noexcept
+		bool operator==(const Vec2D<Float>& other) const noexcept
 		{
 			return x == other.x && y == other.y;
 		}
-		bool operator!=(const Vec<Float>& other) const noexcept
+		bool operator!=(const Vec2D<Float>& other) const noexcept
 		{
 			return x != other.x || y != other.y;
 		}
 
-		Vec<Float> operator+(const Vec<Float>& other) const noexcept
+		Vec2D<Float> operator+(const Vec2D<Float>& other) const noexcept
 		{
 			return { x + other.x, y + other.y };
 		}
-		Vec<Float> operator-(const Vec<Float>& other) const noexcept
+		Vec2D<Float> operator-(const Vec2D<Float>& other) const noexcept
 		{
 			return { x - other.x, y - other.y };
 		}
-		Vec<Float> operator*(const Vec<Float>& other) const noexcept
+		Vec2D<Float> operator*(const Vec2D<Float>& other) const noexcept
 		{
 			return { x * other.x, y * other.y };
 		}
-		Vec<Float> operator/(const Vec<Float>& other) const noexcept
+		Vec2D<Float> operator/(const Vec2D<Float>& other) const noexcept
 		{
 			return { x / other.x, y / other.y };
 		}
 
-		Vec<Float> operator+(const Float other) const noexcept
+		Vec2D<Float> operator+(const Float other) const noexcept
 		{
 			return { x + other, y + other };
 		}
-		Vec<Float> operator-(const Float other) const noexcept
+		Vec2D<Float> operator-(const Float other) const noexcept
 		{
 			return { x - other, y - other };
 		}
-		Vec<Float> operator*(const Float other) const noexcept
+		Vec2D<Float> operator*(const Float other) const noexcept
 		{
 			return { x * other, y * other };
 		}
-		Vec<Float> operator/(const Float other) const noexcept
+		Vec2D<Float> operator/(const Float other) const noexcept
 		{
 			return { x / other, y / other };
 		}
 
-		void operator+=(const Vec<Float>& other) noexcept
+		void operator+=(const Vec2D<Float>& other) noexcept
 		{
 			x += other.x;
 			y += other.y;
 		}
-		void operator-=(const Vec<Float>& other) noexcept
+		void operator-=(const Vec2D<Float>& other) noexcept
 		{
 			x -= other.x;
 			y -= other.y;
 		}
-		void operator*=(const Vec<Float>& other) noexcept
+		void operator*=(const Vec2D<Float>& other) noexcept
 		{
 			x *= other.x;
 			y *= other.y;
 		}
-		void operator/=(const Vec<Float>& other) noexcept
+		void operator/=(const Vec2D<Float>& other) noexcept
 		{
 			x /= other.x;
 			y /= other.y;
@@ -210,7 +208,7 @@ namespace orbit
 			return x < eps || y < eps;
 		}
 
-		Vec<Float> inv() const noexcept
+		Vec2D<Float> inv() const noexcept
 		{
 			return {
 				static_cast<Float>(1) / x,
@@ -218,17 +216,17 @@ namespace orbit
 			};
 		}
 
-		Float distSqr(const Vec<Float>& other) const noexcept
+		Float distSqr(const Vec2D<Float>& other) const noexcept
 		{
 			const auto x2 = other.x - x;
 			const auto y2 = other.y - y;
 			return x2 * x2 + y2 * y2;
 		}
-		Float dist(const Vec<Float>& other) const noexcept
+		Float dist(const Vec2D<Float>& other) const noexcept
 		{
 			return std::sqrt(distSqr(other));
 		}
-		Float angle(const Vec<Float>& other) const noexcept
+		Float angle(const Vec2D<Float>& other) const noexcept
 		{
 			return std::atan2(other.y - y, other.x - x);
 		}
@@ -237,12 +235,12 @@ namespace orbit
 	};
 
 	template<typename Float>
-	inline bool operator==(const Vec<Float>& a, const Vec<Float>& b) noexcept
+	inline bool operator==(const Vec2D<Float>& a, const Vec2D<Float>& b) noexcept
 	{
 		return a.x == b.x && a.y == b.y;
 	}
 	template<typename Float>
-	inline bool operator!=(const Vec<Float>& a, const Vec<Float>& b) noexcept
+	inline bool operator!=(const Vec2D<Float>& a, const Vec2D<Float>& b) noexcept
 	{
 		return a.x != b.x || a.y != b.y;
 	}
@@ -251,9 +249,7 @@ namespace orbit
 	template<typename Float, size_t NumEdges>
 	struct Move
 	{
-		static constexpr Float Pi = static_cast<Float>(3.14159265359);
-		static constexpr Float Tau = Pi * static_cast<Float>(2);
-		static constexpr Float TauInv = static_cast<Float>(1) / Tau;
+		using numConst = constants::NumericConstants<Float>;
 		static constexpr Float NumEdgesF = static_cast<Float>(NumEdges);
 
 		Move() :
@@ -263,14 +259,14 @@ namespace orbit
 			const auto numEdgesInv = static_cast<Float>(1) / NumEdgesF;
 			for (auto i = 0; i < NumEdges + 1; ++i)
 			{
-				const auto x = Tau * static_cast<Float>(i) * numEdgesInv - Pi;
+				const auto x = numConst::Tau * static_cast<Float>(i) * numEdgesInv - numConst::Pi;
 				sinBuf[i] = std::sin(x);
 				cosBuf[i] = std::cos(x);
 			}
 		}
-		void operator()(Vec<Float>& vec, Float angle, Float mag) const noexcept
+		void operator()(Vec2D<Float>& vec, Float angle, Float mag) const noexcept
 		{
-			const auto idx = static_cast<size_t>(std::floor((angle + Pi) * TauInv * NumEdgesF));
+			const auto idx = static_cast<size_t>(std::floor((angle + numConst::Pi) * numConst::TauInv * NumEdgesF));
 			vec.x += cosBuf[idx] * mag;
 			vec.y += sinBuf[idx] * mag;
 		}
@@ -279,6 +275,7 @@ namespace orbit
 	};
 
 	/********** struct Shared **********/
+	/*
 	template<typename Float>
 	struct Shared
 	{
@@ -288,6 +285,23 @@ namespace orbit
 
 		const Move<Float, 64> move;
 		static Shared<Float> shared;
+	}; */
+
+	// Singleton
+	template<typename Float>
+	struct Shared {
+		const Move<Float, 64> move;
+
+		static Shared<Float>& getInstance() {
+			static Shared<Float> instance{};
+			return instance;
+		}
+
+		Shared<Float>& operator=(Shared<Float> const& other) = delete;
+		Shared<Float>(Shared<Float> const& other) = delete;
+
+	private:
+		Shared() : move() {}
 	};
 
 	/********** struct Downsample **********/
@@ -305,7 +319,7 @@ namespace orbit
 			Fs = sampleRate * oInv;
 			blockSize = _blockSize * oInv;
 		}
-		bool shouldProcess() noexcept
+		bool doProcess() noexcept
 		{
 			++idx;
 			if (idx == order)
@@ -324,7 +338,7 @@ namespace orbit
 	};
 
 	template<typename Float>
-	juce::String toString(Vec<Float> vec)
+	juce::String toString(Vec2D<Float> vec)
 	{
 		return static_cast<juce::String>(vec.x) << "; " << static_cast<juce::String>(vec.y);
 	}
@@ -333,8 +347,7 @@ namespace orbit
 	template<typename Float>
 	struct Planet
 	{
-		static constexpr Float Pi = static_cast<Float>(3.14159265359);
-		static constexpr Float Tau = Pi * static_cast<Float>(2);
+		using numConst = constants::NumericConstants<Float>;
 
 		Planet() :
 			pos(),
@@ -344,7 +357,7 @@ namespace orbit
 			angle(static_cast<Float>(0)),
 			mag(static_cast<Float>(0))
 		{}
-		Planet(Vec<Float>&& _pos, Vec<Float>&& _dir, Float _mass, Float _radius) :
+		Planet(Vec2D<Float>&& _pos, Vec2D<Float>&& _dir, Float _mass, Float _radius) :
 			pos(_pos),
 			dir(_dir),
 			mass(_mass),
@@ -381,20 +394,28 @@ namespace orbit
 			Float attraction = static_cast<Float>(1)) noexcept
 		{
 			const auto distSqr = pos.distSqr(other.pos);
+			const auto dist = std::sqrt(distSqr);
 			const auto rad2 = radius + other.radius;
+			const auto rad2sq = rad2 * rad2;
+			const auto distSqrInv = static_cast<Float>(1) / distSqr;
+			const auto velo = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+			angle = pos.angle(other.pos);
+
 			bool collides = false;
-			if (distSqr < rad2 * rad2)
+			if (distSqr < rad2sq)
 			{
-				collideSlowDown(1 - G * Tau);
+				const Float innerRepel = 10.f;
+				mag = ((G * mass * other.mass * distSqrInv * std::abs(attraction))
+					/ rad2sq - innerRepel) / (rad2sq * rad2);
+				speedLimit(static_cast<Float>(10e+03));
+				Shared<Float>::getInstance().move(dir, angle, std::tanh(mag));
 				collides = true;
 			}
 			else
 			{
-				const auto distSqrInv = static_cast<Float>(1) / distSqr;
-				angle = pos.angle(other.pos);
 				mag = G * mass * other.mass * distSqrInv * attraction;
 				speedLimit(static_cast<Float>(10e+03));
-				Shared<Float>::shared.move(dir, angle, std::tanh(mag));
+				Shared<Float>::getInstance().move(dir, angle, std::tanh(mag));
 			}
 			spaceMud(spaceMudVal);
 			return collides;
@@ -404,7 +425,7 @@ namespace orbit
 			pos += dir;
 		}
 
-		Vec<Float> pos, dir;
+		Vec2D<Float> pos, dir;
 		Float mass, radius, angle, mag;
 	private:
 		// experimental functions:
@@ -428,9 +449,7 @@ namespace orbit
 	template<typename Float>
 	struct CelestialBuffer
 	{
-		static constexpr Float Pi = static_cast<Float>(3.14159265359);
-		static constexpr Float Tau = Pi * static_cast<Float>(2);
-
+		using numConst = constants::NumericConstants<Float>;
 		using Plnt = Planet<Float>;
 		using Buf = std::vector<Float>;
 		using Smth = Smooth<Float>;
@@ -447,7 +466,7 @@ namespace orbit
 		void update(const Plnt& planet, int s) noexcept
 		{
 			magBuf[s] = std::tanh(planet.mag * static_cast<Float>(8000));
-			phaseBuf[s] = planet.angle * planet.angle + planet.pos.x * planet.pos.y * Tau;
+			phaseBuf[s] = planet.angle * planet.angle + planet.pos.x * planet.pos.y * numConst::Tau;
 		}
 		void makeSmooth(const float* depth, float ringBufferSize, int numSamples) noexcept
 		{
@@ -508,8 +527,7 @@ namespace orbit
 	template<typename Float, size_t NumPlanets>
 	struct Processor
 	{
-		static constexpr Float Pi = static_cast<Float>(3.14159265359);
-		static constexpr Float Tau = Pi * static_cast<Float>(2);
+		using numConst = constants::NumericConstants<Float>;
 
 		static constexpr Float Gravity = static_cast<Float>(.001);
 		static constexpr Float MinPos = static_cast<Float>(-1);
@@ -589,7 +607,7 @@ namespace orbit
 
 			for (auto s = 0; s < numSamples; ++s)
 			{
-				if (downsample.shouldProcess())
+				if (downsample.doProcess())
 					processSample(_numPlanets, gravity, spaceMud, attraction);
 				for (auto i = 0; i < _numPlanets; ++i)
 					uniBuf.update(planets[i], i, s);
@@ -672,9 +690,9 @@ namespace orbit
 			for (auto p = 0; p < _numPlanets; ++p)
 			{
 				auto& planet = planets[p];
-				planet.angle = static_cast<Float>(p) / static_cast<Float>(_numPlanets) * Tau - Pi;
+				planet.angle = static_cast<Float>(p) / static_cast<Float>(_numPlanets) * numConst::Tau - numConst::Pi;
 				planet.mag = .01f;
-				Shared<Float>::shared.move(planet.dir, planet.angle, std::tanh(planet.mag));
+				Shared<Float>::getInstance().move(planet.dir, planet.angle, std::tanh(planet.mag));
 			}
 		}
 	public:
@@ -750,9 +768,6 @@ namespace orbit
 	template<typename Float>
 	struct Delay
 	{
-		static constexpr Float Pi = static_cast<Float>(3.14159265359);
-		static constexpr Float Tau = Pi * static_cast<Float>(2);
-		static constexpr Float TauInv = static_cast<Float>(1) / Tau;
 
 		using RingBuffer = std::array<std::vector<Float>, 2>;
 		using WHeadBuf = std::vector<int>;
