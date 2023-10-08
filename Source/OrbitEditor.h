@@ -1,6 +1,8 @@
 #pragma once
 #include "GUIBasics.h"
 
+#define PLANET_STARTING_COLOR 0xffff0000
+
 namespace orbit
 {
 	namespace gui
@@ -17,14 +19,12 @@ namespace orbit
 				juce::Component(),
 				orbit(_orbit),
 				planets(orbit.getPlanets()),
-				centre(),
-				minDimen(static_cast<Float>(1)),
-				planetCols()
+				minDimen(static_cast<Float>(1))
 			{
 				for (auto p = 0; p < NumPlanets; ++p)
 				{
 					auto mass = planets[p].mass;
-					planetCols[p] = juce::Colour(0xffff0000).withRotatedHue(mass);
+					planetCols[p] = juce::Colour(PLANET_STARTING_COLOR).withRotatedHue(mass);
 				}
 
 				startTimerHz(FPS);
@@ -35,24 +35,23 @@ namespace orbit
 				{
 					g.setColour(planetCols[p]);
 					const auto& planet = planets[p];
-					const auto pos = mapToBounds(planet.pos);
+					const auto pos = mapPlanetPosToBounds(planet.pos);
 					const auto rad = planet.radius * minDimen;
 					const auto diamtr = static_cast<float>(rad * static_cast<Float>(2));
 					const auto d = diamtr > 1.f ? diamtr : 1.f;
-					if (inBounds(pos))
+					if (inBounds(pos, 2.0))
+						//if (true)
 					{
 						const auto x = static_cast<float>(pos.x - rad);
 						const auto y = static_cast<float>(pos.y - rad);
 						g.fillEllipse(x, y, d, d);
-					}	
+					}
 				}
 			}
-		protected:
-			Orbit& orbit;
-			const Planets& planets;
-			Vec<Float> bounds, centre;
-			Float minDimen;
-			std::array<juce::Colour, NumPlanets> planetCols;
+			void timerCallback() override
+			{
+				repaint();
+			}
 
 			void resized() override
 			{
@@ -71,12 +70,17 @@ namespace orbit
 				minDimen = std::min(width, height);
 			}
 
-			void timerCallback() override
-			{
-				repaint();
-			}
+		private:
+			Orbit& orbit;
+			const Planets& planets;
+			Vec2D<Float> bounds{}, centre{};
+			Float minDimen;
+			std::array<juce::Colour, NumPlanets> planetCols{};
 
-			Vec<Float> mapToBounds(const Vec<Float>& vec) const noexcept
+			/*
+			* The relative position of a planet is between -1 and 1, where 0 is the centre of the coord. system.
+			*/
+			Vec2D<Float> mapPlanetPosToBounds(const Vec2D<Float>& vec) const noexcept
 			{
 				return
 				{
@@ -85,13 +89,13 @@ namespace orbit
 				};
 			}
 
-			bool inBounds(const Vec<Float>& vec) const noexcept
+			bool inBounds(const Vec2D<Float>& vec, const Float& edge) const noexcept
 			{
 				return
-					vec.x > static_cast<Float>(-2) &&
-					vec.x < (bounds.x + static_cast<Float>(2)) &&
-					vec.y > static_cast<Float>(-2) &&
-					vec.y < bounds.y + static_cast<Float>(2);
+					vec.x > -edge &&
+					vec.x < (bounds.x + edge) &&
+					vec.y > -edge &&
+					vec.y < bounds.y + edge;
 			}
 		};
 	}

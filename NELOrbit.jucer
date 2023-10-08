@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="DvT5dP" name="NELOrbit" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="20">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="20"
+              displaySplashScreen="1">
   <MAINGROUP id="SA97iH" name="NELOrbit">
+    <FILE id="VBlRsB" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
+    <FILE id="H0Crew" name="UI.cpp" compile="1" resource="0" file="Source/UI.cpp"/>
+    <FILE id="t4wnvX" name="GUIBasics.cpp" compile="1" resource="0" file="Source/GUIBasics.cpp"/>
+    <FILE id="C7vhpW" name="Param.cpp" compile="1" resource="0" file="Source/Param.cpp"/>
     <GROUP id="{0F31C508-B3DC-C266-7438-4534AFD73CB3}" name="Source">
       <FILE id="xpAZOs" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
