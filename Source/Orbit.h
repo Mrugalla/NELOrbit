@@ -869,7 +869,7 @@ public:
 					const auto mag = magBuf[s];
 
 					const auto sOut = cubicHermiteSpline(ring, r, ringBufferSize);
-					const auto sIn = ring[w] * -mag + sOut;
+					const auto sIn = smpls[s] * -mag; + sOut;
 
 					ring[w] = sIn;
 					smpls[s] = sOut;
@@ -898,12 +898,14 @@ public:
 			wHead(),
 			delays()
 		{}
+
 		void prepare(double sampleRate, int blockSize)
 		{
 			wHead.prepare(blockSize);
 			for (auto& delay : delays)
 				delay.prepare(sampleRate, blockSize);
 		}
+
 		void operator()(Samples& samples, const UniBuf& uniBuf,
 			int numPlanets, int numChannels, int numSamples) noexcept
 		{
@@ -920,6 +922,7 @@ public:
 				);
 			}
 		}
+
 		Float getRingBufferSizeF() const noexcept { return delays[0].getRingBufferSizeF(); }
 	private:
 		WriteHead wHead;
