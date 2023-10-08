@@ -27,24 +27,24 @@ NELOrbitAudioProcessor::NELOrbitAudioProcessor()
     using namespace orbit;
 
     orbit.giveBirthToPlanet(
-        { Vec<float>(0.f, 0.f), Vec<float>(0.f, 0.f), 1.7f , .02f },
+        { Vec2D<float>(0.f, 0.f), Vec2D<float>(0.f, 0.f), 1.7f , .02f },
         0
     );
 
     orbit.giveBirthToPlanet(
-        { Vec<float>(0.f, .5f), Vec<float>(-.001f, 0.f), .4f, .005f },
+        { Vec2D<float>(0.f, .5f), Vec2D<float>(-.001f, 0.f), .4f, .005f },
         1
     );
     orbit.giveBirthToPlanet(
-        { Vec<float>(0.f, -.5f), Vec<float>(.001f, 0.f), .4f, .005f },
+        { Vec2D<float>(0.f, -.5f), Vec2D<float>(.001f, 0.f), .4f, .005f },
         2
     );
     orbit.giveBirthToPlanet(
-        { Vec<float>(.5f, .5f), Vec<float>(-.001f, -.001f), .4f, .005f },
+        { Vec2D<float>(.5f, .5f), Vec2D<float>(-.001f, -.001f), .4f, .005f },
         3
     );
     orbit.giveBirthToPlanet(
-        { Vec<float>(-.5f, -.5f), Vec<float>(-.001f, .001f), .4f, .005f },
+        { Vec2D<float>(-.5f, -.5f), Vec2D<float>(-.001f, .001f), .4f, .005f },
         4
     );
 
@@ -174,8 +174,8 @@ void NELOrbitAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
 
     const auto numChannelsIn = getChannelCountOfBus(true, 0);
     const auto numChannels = buffer.getNumChannels();
-    const auto samplesDry = buffer.getArrayOfReadPointers();
-    auto samples = buffer.getArrayOfWritePointers();
+    const auto samplesDry = const_cast<float const**>(buffer.getArrayOfReadPointers());
+    auto samples = const_cast<float **>(buffer.getArrayOfWritePointers());
 
     dryWet.saveDry(
         samplesDry,
