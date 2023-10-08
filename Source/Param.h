@@ -21,6 +21,7 @@ namespace param
 		Attraction,
 		NumParams
 	};
+
 	static constexpr int NumParams = static_cast<int>(PID::NumParams);
 	inline juce::String toString(PID pID)
 	{
@@ -227,7 +228,6 @@ namespace param
 				}
 				return altVal;
 			};
-
 			const auto valToStrPercent = [](float v) { return juce::String(std::floor(v * 100.f)) + " " + toString(Unit::Percent); };
 			const auto valToStrHz = [](float v) { return juce::String(v).substring(0, 4) + " " + toString(Unit::Hz); };
 			const auto valToStrPhase = [](float v) { return juce::String(std::floor(v * 180.f)) + " " + toString(Unit::Degree); };
@@ -283,7 +283,7 @@ namespace param
 			params.push_back(new Param(PID::Gain, makeRange::biasXL(-120.f, 3.f, .9f), -0.f, valToStrDb, strToValDb));
 			params.push_back(new Param(PID::StereoConfig, makeRange::toggle(), 1.f, valToStrLRMS, strToValLRMS));
 
-			params.push_back(new Param(PID::NumPlanets, makeRange::stepped(2, 13, 1), 13, valToStrPlanets, strToValPlanets));
+			params.push_back(new Param(PID::NumPlanets, makeRange::stepped(2, 32, 1), 13, valToStrPlanets, strToValPlanets));
 			params.push_back(new Param(PID::Gravity, makeRange::biasXL(.001f, 1.f, -.95f), .001f, valToStrGravity, strToValGravity));
 			params.push_back(new Param(PID::SpaceMud, makeRange::biasXL(0.f, .3f, -.9f), 0.f, valToStrPercent, strToValPercent));
 			params.push_back(new Param(PID::Attraction, makeRange::biasXL(-1.f, 1.f, 0.f), 1.f, valToStrPercent, strToValPercent));

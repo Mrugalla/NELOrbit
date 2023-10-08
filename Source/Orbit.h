@@ -32,19 +32,23 @@ namespace orbit
 			const auto x = std::pow(numConst::E, static_cast<Float>(-1) / d);
 			setX(x);
 		}
+
 		void makeFromDecayInSecs(Float d, Float Fs) noexcept
 		{
 			makeFromDecayInSamples(d * Fs);
 		}
+
 		void makeFromDecayInFc(Float fc) noexcept
 		{
 			const auto x = std::pow(numConst::E, -numConst::Tau * fc);
 			setX(x);
 		}
+
 		void makeFromDecayInHz(Float d, Float Fs) noexcept
 		{
 			makeFromDecayInFc(d / Fs);
 		}
+
 		void makeFromDecayInMs(Float d, Float Fs) noexcept
 		{
 			makeFromDecayInSamples(d * Fs * static_cast<Float>(.001));
@@ -58,6 +62,7 @@ namespace orbit
 			snap(_snap),
 			startVal(_startVal)
 		{}
+
 		void reset()
 		{
 			a0 = static_cast<Float>(1);
@@ -65,12 +70,14 @@ namespace orbit
 			y1 = startVal;
 			eps = static_cast<Float>(0);
 		}
+
 		void setX(Float x) noexcept
 		{
 			a0 = static_cast<Float>(1) - x;
 			b1 = x;
 			eps = a0 * static_cast<Float>(1.5);
 		}
+
 		void operator()(Float* buffer, Float val, int numSamples) noexcept
 		{
 			if (buffer[0] == val)
@@ -78,15 +85,18 @@ namespace orbit
 			for (auto s = 0; s < numSamples; ++s)
 				buffer[s] = processSample(val);
 		}
+
 		void operator()(Float* buffer, int numSamples) noexcept
 		{
 			for (auto s = 0; s < numSamples; ++s)
 				buffer[s] = processSample(buffer[s]);
 		}
+
 		Float operator()(Float sample) noexcept
 		{
 			return processSample(sample);
 		}
+
 	private:
 		Float a0, b1, y1, eps, startVal;
 		const bool snap;
@@ -102,7 +112,8 @@ namespace orbit
 	};
 
 	template<typename Float>
-	inline void prepareParam(Smooth<Float>& smooth, std::vector<Float>& buf, Float smoothLen, Float sampleRate, int blockSize)
+	inline void prepareParam(Smooth<Float>& smooth, std::vector<Float>& buf, Float smoothLen,
+		Float sampleRate, int blockSize)
 	{
 		smooth.makeFromDecayInMs(smoothLen, sampleRate);
 		buf.resize(blockSize, static_cast<Float>(0));
@@ -121,6 +132,7 @@ namespace orbit
 		{
 			return x == other.x && y == other.y;
 		}
+
 		bool operator!=(const Vec2D<Float>& other) const noexcept
 		{
 			return x != other.x || y != other.y;
@@ -264,6 +276,7 @@ namespace orbit
 				cosBuf[i] = std::cos(x);
 			}
 		}
+
 		void operator()(Vec2D<Float>& vec, Float angle, Float mag) const noexcept
 		{
 			const auto idx = static_cast<size_t>(std::floor((angle + numConst::Pi) * numConst::TauInv * NumEdgesF));
@@ -289,17 +302,19 @@ namespace orbit
 
 	// Singleton
 	template<typename Float>
-	struct Shared {
-		const Move<Float, 64> move;
+	struct Shared
+	{
+		const Move<Float, 128> move;
 
-		static Shared<Float>& getInstance() {
+		static Shared<Float>& getInstance()
+		{
 			static Shared<Float> instance{};
 			return instance;
 		}
 
 		Shared<Float>& operator=(Shared<Float> const& other) = delete;
+		
 		Shared<Float>(Shared<Float> const& other) = delete;
-
 	private:
 		Shared() : move() {}
 	};
@@ -311,14 +326,15 @@ namespace orbit
 		Downsample(const int _order) :
 			order(1 << _order)
 		{
-
 		}
+
 		void prepare(Number sampleRate, int _blockSize) noexcept
 		{
 			const auto oInv = static_cast<Number>(1) / static_cast<Number>(order);
 			Fs = sampleRate * oInv;
 			blockSize = _blockSize * oInv;
 		}
+
 		bool doProcess() noexcept
 		{
 			++idx;
@@ -329,6 +345,7 @@ namespace orbit
 			}
 			return false;
 		}
+
 		Number Fs{ static_cast<Number>(48000) };
 
 	private:
@@ -357,6 +374,7 @@ namespace orbit
 			angle(static_cast<Float>(0)),
 			mag(static_cast<Float>(0))
 		{}
+
 		Planet(Vec2D<Float>&& _pos, Vec2D<Float>&& _dir, Float _mass, Float _radius) :
 			pos(_pos),
 			dir(_dir),
@@ -365,6 +383,7 @@ namespace orbit
 			angle(static_cast<Float>(0)),
 			mag(static_cast<Float>(0))
 		{}
+		
 		const Float getX() const noexcept { return pos.x; }
 		const Float getY() const noexcept { return pos.y; }
 
@@ -379,6 +398,7 @@ namespace orbit
 			planetChild.setProperty(ids.mass, mass, nullptr);
 			state.appendChild(planetChild, nullptr);
 		}
+		
 		void loadPatch(const juce::ValueTree& state, const StateIDs& ids) noexcept
 		{
 			pos.x = static_cast<Float>(state.getProperty(ids.posX));
@@ -394,7 +414,7 @@ namespace orbit
 			Float attraction = static_cast<Float>(1)) noexcept
 		{
 			const auto distSqr = pos.distSqr(other.pos);
-			const auto dist = std::sqrt(distSqr);
+			//const auto dist = std::sqrt(distSqr);
 			const auto rad2 = radius + other.radius;
 			const auto rad2sq = rad2 * rad2;
 			const auto distSqrInv = static_cast<Float>(1) / distSqr;
@@ -458,16 +478,19 @@ namespace orbit
 			phaseSmooth(), magSmooth(),
 			phaseBuf(), magBuf()
 		{}
+		
 		void prepare(Float sampleRate, int blockSize)
 		{
 			prepareParam(phaseSmooth, phaseBuf, static_cast<Float>(120), sampleRate, blockSize);
 			prepareParam(magSmooth, magBuf, static_cast<Float>(20), sampleRate, blockSize);
 		}
+		
 		void update(const Plnt& planet, int s) noexcept
 		{
 			magBuf[s] = std::tanh(planet.mag * static_cast<Float>(8000));
 			phaseBuf[s] = planet.angle * planet.angle + planet.pos.x * planet.pos.y * numConst::Tau;
 		}
+		
 		void makeSmooth(const float* depth, float ringBufferSize, int numSamples) noexcept
 		{
 			for (auto s = 0; s < numSamples; ++s)
@@ -476,7 +499,9 @@ namespace orbit
 				magBuf[s] = magSmooth(magBuf[s]);
 			}
 		}
+		
 		const Float* getPhaseBuf() const noexcept { return phaseBuf.data(); }
+		
 		const Float* getMagBuf() const noexcept { return magBuf.data(); }
 	private:
 		Smth phaseSmooth, magSmooth;
@@ -497,16 +522,19 @@ namespace orbit
 			depthSmooth(),
 			depthBuf()
 		{}
+
 		void prepare(Float sampleRate, int blockSize)
 		{
 			for(auto& cb: buffer)
 				cb.prepare(sampleRate, blockSize);
 			prepareParam(depthSmooth, depthBuf, static_cast<Float>(20), static_cast<Float>(sampleRate), blockSize);
 		}
+
 		void update(const Plnt& planet, int p, int s) noexcept
 		{
 			buffer[p].update(planet, s);
 		}
+
 		void makeSmooth(float ringBufferSize, float depth, int numSamples, int numPlanets = NumPlanets) noexcept
 		{
 			depthSmooth(depthBuf.data(), depth, numSamples);
@@ -516,6 +544,7 @@ namespace orbit
 				celest.makeSmooth(depthBuf.data(), ringBufferSize, numSamples);
 			}
 		}
+		
 		const Celest& operator[](int p) const noexcept { return buffer[p]; }
 	private:
 		Buffer buffer;
@@ -558,6 +587,7 @@ namespace orbit
 			for (auto p = 0; p < planets.size(); ++p)
 				planets[p].savePatch(orbitChild, ids);
 		}
+		
 		void loadPatch(const juce::ValueTree& state) noexcept
 		{
 			StateIDs ids;
@@ -577,17 +607,40 @@ namespace orbit
 				p.pos.y = static_cast<Float>(rand.nextDouble() * 2. - 1.);
 			}
 		}
+		
 		void giveBirthToPlanet(Planet<Float>&& pl, int p) noexcept
 		{
 			planets[p] = pl;
 		}
+		
+		bool canGeneratePlanet(Float x, Float y, int p) noexcept
+		{
+			for (auto i = 0; i < p; ++i)
+				if (planets[i].pos.x == x && planets[i].pos.y == y)
+					return false;
+			return true;
+		}
+
 		void giveBirthWithRandomProperties(int p) noexcept
 		{
 			juce::Random rand;
-			planets[p].pos.x = static_cast<Float>(rand.nextDouble() * 2. - 1.);
-			planets[p].pos.y = static_cast<Float>(rand.nextDouble() * 2. - 1.);
 			planets[p].mass = static_cast<Float>(.3 + rand.nextDouble() * (.9 - .3));
 			planets[p].radius = static_cast<Float>(.001 + rand.nextDouble() * (.01 - .001));
+			planets[p].dir.x = static_cast<Float>(rand.nextDouble() * 2. - 1.) * .001;
+			planets[p].dir.y = static_cast<Float>(rand.nextDouble() * 2. - 1.) * .001;
+
+			Float x, y;
+			bool canGenerate = false;
+			do
+			{
+				x = static_cast<Float>(rand.nextDouble() * 2. - 1.);
+				y = static_cast<Float>(rand.nextDouble() * 2. - 1.);
+				canGenerate = canGeneratePlanet(x, y, p);
+						
+			} while (!canGenerate);
+			
+			planets[p].pos.x = x;
+			planets[p].pos.y = y;
 		}
 
 		void prepare(Float _sampleRate, int _blockSize)
@@ -603,6 +656,8 @@ namespace orbit
 			Float spaceMud = 1.f,
 			Float attraction = 1.f) noexcept
 		{
+			//jassert(_numPlanets <= 13);
+
 			numPlanets.store(_numPlanets);
 
 			for (auto s = 0; s < numSamples; ++s)
@@ -618,6 +673,7 @@ namespace orbit
 		{
 			return planets;
 		}
+		
 		int getNumPlanets() const noexcept { return numPlanets.load(); }
 	private:
 		Planets planets;
@@ -637,7 +693,8 @@ namespace orbit
 				{
 					const bool samePlanet = i == j;
 					if (!samePlanet)
-						if (!p0.gravitate(
+						if (!p0.gravitate
+						(
 							planets[j],
 							sampleRateInv * numPlanetsInv * gravity,
 							spaceMud,
@@ -668,6 +725,7 @@ namespace orbit
 					planet.dir.y *= Repell;
 			}
 		}
+		
 		/*
 		void topologyTorus()
 		{
@@ -695,7 +753,8 @@ namespace orbit
 				Shared<Float>::getInstance().move(planet.dir, planet.angle, std::tanh(planet.mag));
 			}
 		}
-	public:
+	
+public:
 		void dbg(int i = 0)
 		{
 			switch (i)
@@ -779,6 +838,7 @@ namespace orbit
 			ringBufferSizeF(static_cast<Float>(1)),
 			ringBufferSize(1)
 		{}
+
 		void prepare(double sampleRate, int blockSize)
 		{
 			ringBufferSize = static_cast<int>(sampleRate * .04); // 40ms
@@ -786,11 +846,12 @@ namespace orbit
 			for(auto& r: ringBuffer)
 				r.resize(ringBufferSize + 4);
 		}
+
 		void operator()(Samples& samples, const int* wHead, const CelestialBuf& celestial,
 			int numChannels, int numSamples) noexcept
 		{
-			const auto phase = celestial.getPhaseBuf();
-			const auto mag = celestial.getMagBuf();
+			const auto phaseBuf = celestial.getPhaseBuf();
+			const auto magBuf = celestial.getMagBuf();
 
 			for (auto ch = 0; ch < numChannels; ++ch)
 			{
@@ -800,15 +861,22 @@ namespace orbit
 				{
 					const auto w = wHead[s];
 					
-					auto r = static_cast<Float>(w) - phase[s];
+					const auto phase = phaseBuf[s];
+					auto r = static_cast<Float>(w) - phase;
 					if (r < static_cast<Float>(0))
 						r += ringBufferSize;
 
-					ring[w] = ring[w] * -mag[s] + smpls[s];
-					smpls[s] = cubicHermiteSpline(ring, r, ringBufferSize);
+					const auto mag = magBuf[s];
+
+					const auto sOut = cubicHermiteSpline(ring, r, ringBufferSize);
+					const auto sIn = ring[w] * -mag + sOut;
+
+					ring[w] = sIn;
+					smpls[s] = sOut;
 				}
 			}
 		}
+
 		int getRingBufferSize() const noexcept { return ringBufferSize; }
 		Float getRingBufferSizeF() const noexcept { return ringBufferSizeF; }
 	private:

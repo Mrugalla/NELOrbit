@@ -5,11 +5,11 @@
 #include "DryWetProcessor.h"
 #include <JuceHeader.h>
 
-#define NumPlanetsMacro 13
+#define NumPlanetsMacro 32
 
-class NELOrbitAudioProcessor  : public juce::AudioProcessor
+struct NELOrbitAudioProcessor :
+    public juce::AudioProcessor
 {
-public:
     //==============================================================================
     NELOrbitAudioProcessor();
     ~NELOrbitAudioProcessor() override;
@@ -58,15 +58,10 @@ public:
     using Delays = orbit::Delays<float, NumPlanetsMacro>;
 
     juce::ValueTree state;
-
     param::Params params;
-
     drywet::Processor dryWet;
-
     Orbit orbit;
     UniversalBuffer universalBuffer;
     AudioBufs audioBufs;
     Delays delays;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NELOrbitAudioProcessor)
 };
