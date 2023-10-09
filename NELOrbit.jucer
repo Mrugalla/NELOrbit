@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="DvT5dP" name="NELOrbit" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="20"
-              displaySplashScreen="1">
+              displaySplashScreen="0" defines="NumPlanetsMacro = 24">
   <MAINGROUP id="SA97iH" name="NELOrbit">
     <FILE id="VBlRsB" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
     <FILE id="t4wnvX" name="GUIBasics.cpp" compile="1" resource="0" file="Source/GUIBasics.cpp"/>

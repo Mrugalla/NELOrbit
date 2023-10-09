@@ -324,6 +324,9 @@ namespace orbit
 	struct Downsample
 	{
 		Downsample(const int _order) :
+			Fs(static_cast<Number>(48000)),
+			blockSize(64),
+			idx(0), // or -1?
 			order(1 << _order)
 		{
 		}
@@ -346,11 +349,10 @@ namespace orbit
 			return false;
 		}
 
-		Number Fs{ static_cast<Number>(48000) };
-
+		Number Fs;
 	private:
-		int blockSize{ 64 };
-		int idx{ 0 }; // or -1?
+		int blockSize;
+		int idx;
 		const int order;
 	};
 
@@ -440,6 +442,7 @@ namespace orbit
 			spaceMud(spaceMudVal);
 			return collides;
 		}
+		
 		void update() noexcept
 		{
 			pos += dir;

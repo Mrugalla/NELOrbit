@@ -5,11 +5,11 @@
 #include "DryWetProcessor.h"
 #include <JuceHeader.h>
 
-#define NumPlanetsMacro 32
-
 struct NELOrbitAudioProcessor :
     public juce::AudioProcessor
 {
+    using AppProps = juce::ApplicationProperties;
+
     //==============================================================================
     NELOrbitAudioProcessor();
     ~NELOrbitAudioProcessor() override;
@@ -57,6 +57,7 @@ struct NELOrbitAudioProcessor :
     using AudioBufs = std::array<std::array<std::vector<float>, 2>, NumPlanetsMacro>;
     using Delays = orbit::Delays<float, NumPlanetsMacro>;
 
+    AppProps props;
     juce::ValueTree state;
     param::Params params;
     drywet::Processor dryWet;

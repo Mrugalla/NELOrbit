@@ -14,9 +14,9 @@ NELOrbitAudioProcessorEditor::NELOrbitAudioProcessorEditor(NELOrbitAudioProcesso
     setOpaque(true);
     setResizable(true, true);
 
-    const auto& state = audioProcessor.state;
-    const auto width = state.getProperty("editorWidth", 400);
-    const auto height = state.getProperty("editorHeight", 400);
+    const auto& user = *audioProcessor.props.getUserSettings();
+    const auto width = user.getIntValue("editorWidth", 400);
+    const auto height = user.getIntValue("editorHeight", 400);
     setSize(width, height);
 }
 
@@ -30,6 +30,7 @@ void NELOrbitAudioProcessorEditor::resized()
     orbit.setBounds(getLocalBounds());
     ui.setBounds(getLocalBounds().reduced(2));
 
-    audioProcessor.state.setProperty("editorWidth", getWidth(), nullptr);
-    audioProcessor.state.setProperty("editorHeight", getHeight(), nullptr);
+    auto& user = *audioProcessor.props.getUserSettings();
+    user.setValue("editorWidth", getWidth());
+    user.setValue("editorHeight", getHeight());
 }

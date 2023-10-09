@@ -283,9 +283,9 @@ namespace param
 			params.push_back(new Param(PID::Gain, makeRange::biasXL(-120.f, 3.f, .9f), -0.f, valToStrDb, strToValDb));
 			params.push_back(new Param(PID::StereoConfig, makeRange::toggle(), 1.f, valToStrLRMS, strToValLRMS));
 
-			params.push_back(new Param(PID::NumPlanets, makeRange::stepped(2, 32, 1), 13, valToStrPlanets, strToValPlanets));
+			params.push_back(new Param(PID::NumPlanets, makeRange::stepped(2.f, (float)NumPlanetsMacro, 1.f), 13.f, valToStrPlanets, strToValPlanets));
 			params.push_back(new Param(PID::Gravity, makeRange::biasXL(.001f, 1.f, -.95f), .001f, valToStrGravity, strToValGravity));
-			params.push_back(new Param(PID::SpaceMud, makeRange::biasXL(0.f, .3f, -.9f), 0.f, valToStrPercent, strToValPercent));
+			params.push_back(new Param(PID::SpaceMud, makeRange::biasXL(0.f, .5f, -.9f), 0.f, valToStrPercent, strToValPercent));
 			params.push_back(new Param(PID::Attraction, makeRange::biasXL(-1.f, 1.f, 0.f), 1.f, valToStrPercent, strToValPercent));
 
 			for (auto param : params)

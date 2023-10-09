@@ -11,6 +11,7 @@ NELOrbitAudioProcessor::NELOrbitAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
+    props(),
     state("state"),
     params(*this),
     
@@ -21,6 +22,21 @@ NELOrbitAudioProcessor::NELOrbitAudioProcessor()
     delays()
 #endif
 {
+    {
+        juce::PropertiesFile::Options options;
+        options.applicationName = JucePlugin_Name;
+        options.filenameSuffix = ".settings";
+        options.folderName = "Mrugalla" + juce::File::getSeparatorString() + JucePlugin_Name;
+        options.osxLibrarySubFolder = "Application Support";
+        options.commonToAllUsers = false;
+        options.ignoreCaseOfKeyNames = false;
+        options.doNotSave = false;
+        options.millisecondsBeforeSaving = 20;
+        options.storageFormat = juce::PropertiesFile::storeAsXML;
+
+        props.setStorageParameters(options);
+    }
+
     for (auto p = 0; p < NumPlanetsMacro; ++p)
         orbit.giveBirthWithRandomProperties(p);
 }
